@@ -470,6 +470,7 @@ angular.module('mentio', [])
             },
             controller: function ($scope) {
                 $scope.visible = false;
+                mentioUtil.menuOpened = false;
 
                 // callable both with controller (menuItem) and without controller (local)
                 this.activate = $scope.activate = function (item) {
@@ -577,6 +578,7 @@ angular.module('mentio', [])
                         scope.activate(items[0]);
                         if (!scope.visible && scope.requestVisiblePendingSearch) {
                             scope.visible = true;
+                            mentioUtil.menuOpened = true;
                             scope.requestVisiblePendingSearch = false;
                         }
                     } else {
@@ -600,6 +602,7 @@ angular.module('mentio', [])
 
                 scope.hideMenu = function () {
                     scope.visible = false;
+                    mentioUtil.menuOpened = false;
                     element.css('display', 'none');
                 };
 

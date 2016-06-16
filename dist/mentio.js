@@ -470,6 +470,7 @@ angular.module('mentio', [])
             },
             controller: ["$scope", function ($scope) {
                 $scope.visible = false;
+                mentioUtil.menuOpened = false;
 
                 // callable both with controller (menuItem) and without controller (local)
                 this.activate = $scope.activate = function (item) {
@@ -577,6 +578,7 @@ angular.module('mentio', [])
                         scope.activate(items[0]);
                         if (!scope.visible && scope.requestVisiblePendingSearch) {
                             scope.visible = true;
+                            mentioUtil.menuOpened = true;
                             scope.requestVisiblePendingSearch = false;
                         }
                     } else {
@@ -600,6 +602,7 @@ angular.module('mentio', [])
 
                 scope.hideMenu = function () {
                     scope.visible = false;
+                    mentioUtil.menuOpened = false;
                     element.css('display', 'none');
                 };
 
@@ -683,7 +686,7 @@ angular.module('mentio', [])
 'use strict';
 
 angular.module('mentio')
-    .factory('mentioUtil', ["$window", "$location", "$anchorScroll", "$timeout", function ($window, $location, $anchorScroll, $timeout) {
+    .factory('mentioUtil', function () {
 
         // public
         function popUnderMention (ctx, triggerCharSet, selectionEl, requireLeadingSpace) {
@@ -707,47 +710,10 @@ angular.module('mentio')
                     zIndex: 10000,
                     display: 'block'
                 });
-
-                $timeout(function(){
-                    scrollIntoView(ctx, selectionEl);
-                },0);
             } else {
                 selectionEl.css({
                     display: 'none'
                 });
-            }
-        }
-
-        function scrollIntoView(ctx, elem)
-        {
-            // cheap hack in px - need to check styles relative to the element
-            var reasonableBuffer = 20;
-            var maxScrollDisplacement = 100;
-            var clientRect;
-            var e = elem[0];
-            while (clientRect === undefined || clientRect.height === 0) {
-                clientRect = e.getBoundingClientRect();
-                if (clientRect.height === 0) {
-                    e = e.childNodes[0];
-                    if (e === undefined || !e.getBoundingClientRect) {
-                        return;
-                    }
-                }
-            }
-            var elemTop = clientRect.top;
-            var elemBottom = elemTop + clientRect.height;
-            if(elemTop < 0) {
-                $window.scrollTo(0, $window.pageYOffset + clientRect.top - reasonableBuffer);
-            } else if (elemBottom > $window.innerHeight) {
-                var maxY = $window.pageYOffset + clientRect.top - reasonableBuffer;
-                if (maxY - $window.pageYOffset > maxScrollDisplacement) {
-                    maxY = $window.pageYOffset + maxScrollDisplacement;
-                }
-                var targetY = $window.pageYOffset - ($window.innerHeight - elemBottom);
-                if (targetY > maxY) {
-                    targetY = maxY;
-                }
-                $window.scrollTo(0, targetY);
             }
         }
 
@@ -1246,9 +1212,8 @@ angular.module('mentio')
             getNodePositionInParent: getNodePositionInParent,
             getContentEditableCaretPosition: getContentEditableCaretPosition,
             pasteHtml: pasteHtml,
-            resetSelection: resetSelection,
-            scrollIntoView: scrollIntoView
+            resetSelection: resetSelection
         };
-    }]);
+    });
 
-angular.module("mentio").run(["$templateCache", function($templateCache) {$templateCache.put("mentio-menu.tpl.html","<style>\n.scrollable-menu {\n    height: auto;\n    max-height: 300px;\n    overflow: auto;\n}\n\n.menu-highlighted {\n    font-weight: bold;\n}\n</style>\n<ul class=\"dropdown-menu scrollable-menu\" style=\"display:block\">\n    <li mentio-menu-item=\"item\" ng-repeat=\"item in items track by $index\">\n        <a class=\"text-primary\" ng-bind-html=\"item.label | mentioHighlight:typedTerm:\'menu-highlighted\' | unsafe\"></a>\n    </li>\n</ul>");}]);
+angular.module("mentio").run(["$templateCache", function($templateCache) {$templateCache.put("mentio-menu.tpl.html","<style>\r\n.scrollable-menu {\r\n    height: auto;\r\n    max-height: 300px;\r\n    overflow: auto;\r\n    top: -20px !important;\r\n    transform: translateY(-100%);\r\n}\r\n\r\n.menu-highlighted {\r\n    font-weight: bold;\r\n}\r\n</style>\r\n<ul class=\"dropdown-menu scrollable-menu\" style=\"display:block\">\r\n    <li mentio-menu-item=\"item\" ng-repeat=\"item in items track by $index\">\r\n        <a class=\"text-primary\" ng-bind-html=\"item.label | mentioHighlight:typedTerm:\'menu-highlighted\' | unsafe\"></a>\r\n    </li>\r\n</ul>");}]);

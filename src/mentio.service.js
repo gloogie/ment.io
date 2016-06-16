@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('mentio')
-    .factory('mentioUtil', function ($window, $location, $anchorScroll, $timeout) {
+    .factory('mentioUtil', function () {
 
         // public
         function popUnderMention (ctx, triggerCharSet, selectionEl, requireLeadingSpace) {
@@ -25,47 +25,10 @@ angular.module('mentio')
                     zIndex: 10000,
                     display: 'block'
                 });
-
-                $timeout(function(){
-                    scrollIntoView(ctx, selectionEl);
-                },0);
             } else {
                 selectionEl.css({
                     display: 'none'
                 });
-            }
-        }
-
-        function scrollIntoView(ctx, elem)
-        {
-            // cheap hack in px - need to check styles relative to the element
-            var reasonableBuffer = 20;
-            var maxScrollDisplacement = 100;
-            var clientRect;
-            var e = elem[0];
-            while (clientRect === undefined || clientRect.height === 0) {
-                clientRect = e.getBoundingClientRect();
-                if (clientRect.height === 0) {
-                    e = e.childNodes[0];
-                    if (e === undefined || !e.getBoundingClientRect) {
-                        return;
-                    }
-                }
-            }
-            var elemTop = clientRect.top;
-            var elemBottom = elemTop + clientRect.height;
-            if(elemTop < 0) {
-                $window.scrollTo(0, $window.pageYOffset + clientRect.top - reasonableBuffer);
-            } else if (elemBottom > $window.innerHeight) {
-                var maxY = $window.pageYOffset + clientRect.top - reasonableBuffer;
-                if (maxY - $window.pageYOffset > maxScrollDisplacement) {
-                    maxY = $window.pageYOffset + maxScrollDisplacement;
-                }
-                var targetY = $window.pageYOffset - ($window.innerHeight - elemBottom);
-                if (targetY > maxY) {
-                    targetY = maxY;
-                }
-                $window.scrollTo(0, targetY);
             }
         }
 
@@ -564,7 +527,6 @@ angular.module('mentio')
             getNodePositionInParent: getNodePositionInParent,
             getContentEditableCaretPosition: getContentEditableCaretPosition,
             pasteHtml: pasteHtml,
-            resetSelection: resetSelection,
-            scrollIntoView: scrollIntoView
+            resetSelection: resetSelection
         };
     });
